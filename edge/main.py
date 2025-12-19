@@ -1,31 +1,40 @@
 import cv2
-from detector import YoloDetector
+from detector import ObjectDetector
 from change_detector import ChangeDetector
-from uploader import upload_image
+from sender import Sender
+import time
 
-detector = YoloDetector()
-change_detector = ChangeDetector()
+detector = ObjectDetector()
+changer = ChangeDetector()
+sender = Sender(
+    server_url="http://<your-django-server>/upload/",
+    api_key="MY_SECRET_KEY"
+)
 
 cap = cv2.VideoCapture(0)
-prev_objects = None
 
 while True:
     ret, frame = cap.read()
     if not ret:
-        break
+        continue
 
     objects = detector.detect(frame)
-    changed = change_detector.compare(prev_objects, objects)
+    added, deleted, moved = changer.detect_changes(objects)
 
-    if changed:
-        filename = "change.jpg"
+    if added or deleted or moved:
+        timestamp = int(time.time())
+        filename = f"frames/change_{timestamp}.jpg"
         cv2.imwrite(filename, frame)
-        upload_image(filename)
 
-    prev_objects = objects
+        if added:
+            sender.send(filename, "added")
+        if deleted:
+            sender.send(filename, "deleted")
+        if moved:
+            sender.send(filename, "moved")
 
-    cv2.imshow("SmartDesk Watch", frame)
-    if cv2.waitKey(1) & 0xFF == 27:
+    cv2.imshow("Edge", frame)
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 cap.release()
