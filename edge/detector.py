@@ -15,6 +15,6 @@ class ObjectDetector:
                 "xmin": row["xmin"],
                 "ymin": row["ymin"],
                 "xmax": row["xmax"],
-                "ymax": row["ymax"],
+                "ymax": row["ymax"]
             })
         return objects

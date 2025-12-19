@@ -1,17 +1,19 @@
 import cv2
+import time
 from detector import ObjectDetector
 from change_detector import ChangeDetector
 from sender import Sender
-import time
+import os
+from config import SERVER_URL, API_KEY
 
 detector = ObjectDetector()
-changer = ChangeDetector()
-sender = Sender(
-    server_url="http://<your-django-server>/upload/",
-    api_key="MY_SECRET_KEY"
-)
+change_detector = ChangeDetector()
+sender = Sender(SERVER_URL, API_KEY)
 
-cap = cv2.VideoCapture(0)
+os.makedirs("frames", exist_ok=True)
+
+cap = cv2.VideoCapture(0)  # 웹캠
+print("📸 Edge 감지 시스템 실행 중...")
 
 while True:
     ret, frame = cap.read()
@@ -19,7 +21,7 @@ while True:
         continue
 
     objects = detector.detect(frame)
-    added, deleted, moved = changer.detect_changes(objects)
+    added, deleted, moved = change_detector.detect_changes(objects)
 
     if added or deleted or moved:
         timestamp = int(time.time())
@@ -33,10 +35,9 @@ while True:
         if moved:
             sender.send(filename, "moved")
 
-    cv2.imshow("Edge", frame)
-    if cv2.waitKey(1) & 0xFF == ord("q"):
+    cv2.imshow("SmartDesk Monitoring", frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()
 cv2.destroyAllWindows()
-
