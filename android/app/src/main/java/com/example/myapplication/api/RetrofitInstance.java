@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetrofitInstance {
 
     private static Retrofit retrofit;
-    private static final String BASE_URL = "https://your_pythonanywhere.com/api/";
+    private static final String BASE_URL = "https://localhost:8000/upload/";
 
     public static ApiService getApi() {
         if (retrofit == null) {
