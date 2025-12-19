@@ -4,7 +4,7 @@ import sys
 def main():
     os.environ.setdefault(
         'DJANGO_SETTINGS_MODULE',
-        'server.settings'   # ⚠️ 프로젝트 이름이 server인 경우
+        'server.settings' 
     )
     try:
         from django.core.management import execute_from_command_line
