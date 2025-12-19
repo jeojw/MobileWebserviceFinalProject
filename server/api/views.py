@@ -1,21 +1,25 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
 from .models import ChangeImage
 from .serializers import ChangeImageSerializer
 
+API_KEY = "MY_SECRET_KEY"
 
 @api_view(['POST'])
-def upload_image(request):
-    serializer = ChangeImageSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def upload(request):
+    key = request.POST.get("key")
+    if key != API_KEY:
+        return Response({"error": "Unauthorized"}, status=401)
+
+    img = request.FILES.get("image")
+    change_type = request.POST.get("type")
+
+    obj = ChangeImage.objects.create(image=img, change_type=change_type)
+    return Response({"status": "ok", "id": obj.id})
 
 
 @api_view(['GET'])
-def image_list(request):
-    images = ChangeImage.objects.order_by('-created_at')
-    serializer = ChangeImageSerializer(images, many=True)
+def list_images(request):
+    imgs = ChangeImage.objects.order_by("-created_at")
+    serializer = ChangeImageSerializer(imgs, many=True)
     return Response(serializer.data)
