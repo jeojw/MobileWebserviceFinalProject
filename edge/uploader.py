@@ -1,8 +1,10 @@
 import requests
 
-SERVER_URL = "https://your_pythonanywhere.com/api/upload/"
+SERVER_URL = "http://127.0.0.1:8000/api/upload/"
 
 def upload_image(filepath):
-    files = {'image': open(filepath, 'rb')}
-    response = requests.post(SERVER_URL, files=files)
-    print("Server:", response.status_code)
+    with open(filepath, 'rb') as f:
+        files = {'image': f}
+        response = requests.post(SERVER_URL, files=files)
+
+    print("Upload status:", response.status_code)
