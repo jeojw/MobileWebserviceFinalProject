@@ -13,7 +13,6 @@ sender = Sender(SERVER_URL, API_KEY)
 os.makedirs("frames", exist_ok=True)
 
 cap = cv2.VideoCapture(0)  # 웹캠
-print("📸 Edge 감지 시스템 실행 중...")
 
 while True:
     ret, frame = cap.read()
