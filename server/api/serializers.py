@@ -4,4 +4,4 @@ from .models import ChangeImage
 class ChangeImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChangeImage
-        fields = '__all__'
+        fields = ['id', 'image', 'created_at']
